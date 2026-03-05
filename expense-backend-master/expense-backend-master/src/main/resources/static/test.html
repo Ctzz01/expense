@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Test</title>
+</head>
+<body>
+    <h1>Backend Connection Test</h1>
+    
+    <button onclick="testBackend()">Test Backend Connection</button>
+    <button onclick="testRegistration()">Test Registration</button>
+    <button onclick="testLogin()">Test Login</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        async function testBackend() {
+            try {
+                const response = await fetch('/user/health');
+                const data = await response.text();
+                document.getElementById('result').innerHTML = `<p>Backend Test: ${data}</p>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Backend Test Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testRegistration() {
+            try {
+                const response = await fetch('/user/signUp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: 'Test User',
+                        username: 'testuser' + Date.now(),
+                        password: 'password123',
+                        account_balance: 1000
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('result').innerHTML = `<p>Registration Test: Success - ${JSON.stringify(data)}</p>`;
+                } else {
+                    const errorText = await response.text();
+                    document.getElementById('result').innerHTML = `<p>Registration Test Error: ${response.status} - ${errorText}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Registration Test Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testLogin() {
+            try {
+                const response = await fetch('/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser',
+                        password: 'password123'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('result').innerHTML = `<p>Login Test: Success - ${JSON.stringify(data)}</p>`;
+                } else {
+                    const errorText = await response.text();
+                    document.getElementById('result').innerHTML = `<p>Login Test Error: ${response.status} - ${errorText}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Login Test Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

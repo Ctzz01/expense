@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Income - Expense Tracker</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <div class="gradient-bg"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-light py-3">
+      <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand fw-bold m-0" href="#">
+          <i class="bi bi-coin me-2"></i>
+          Income Sources
+        </a>
+        <a class="btn btn-sm btn-outline-dark menu-categories-link" href="categories.html" title="Manage Categories">
+          <i class="bi bi-list"></i>
+        </a>
+      </div>
+    </nav>
+
+    <main class="container my-4 my-md-5">
+      <div class="row g-4">
+        <!-- Summary Card -->
+        <div class="col-12">
+          <div class="card glass shadow-lg">
+            <div class="card-body p-3 p-md-4">
+              <div class="row g-3 align-items-end">
+                <div class="col-12">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-semibold">Remaining Balance</div>
+                    <div class="small text-secondary" id="remainingPercentLabel">0%</div>
+                  </div>
+                  <div class="progress progress-lg">
+                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+                  </div>
+                  <div class="row text-center mt-3 g-2">
+                    <div class="col-4">
+                      <div class="metric">
+                        <div class="label">Total Income</div>
+                        <div id="budgetDisplay" class="value">₹0.00</div>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="metric">
+                        <div class="label">Spent</div>
+                        <div id="spentDisplay" class="value">₹0.00</div>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="metric">
+                        <div class="label">Remaining</div>
+                        <div id="remainingDisplay" class="value">₹0.00</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="overBudgetAlert" class="alert alert-danger d-none mt-3 py-2 px-3" role="alert">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Over budget by <span id="overBudgetAmount">₹0.00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Income Card -->
+        <div class="col-12">
+          <div class="card glass shadow-lg float-in">
+            <div class="card-body p-3 p-md-4">
+              <h2 class="h5 mb-3 mb-md-4"><i class="bi bi-plus-circle me-2"></i>Add Income</h2>
+              <form id="incomeForm" class="row g-3 g-md-4">
+                <div class="col-6 col-md-3">
+                  <label for="incomeDateInput" class="form-label">Date</label>
+                  <input type="date" class="form-control" id="incomeDateInput" required />
+                </div>
+                <div class="col-6 col-md-3">
+                  <label for="incomeCategoryInput" class="form-label">Source</label>
+                  <select id="incomeCategoryInput" class="form-select" required>
+                    <option value="" disabled selected>Choose...</option>
+                    <option>Salary</option>
+                    <option>Freelance</option>
+                    <option>Business</option>
+                    <option>Investments</option>
+                    <option>Gift</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-4">
+                  <label for="incomeDescriptionInput" class="form-label">Description</label>
+                  <input type="text" class="form-control" id="incomeDescriptionInput" placeholder="e.g., July Salary, Bonus" required />
+                </div>
+                <div class="col-12 col-md-2">
+                  <label for="incomeAmountInput" class="form-label">Amount</label>
+                  <div class="input-group">
+                    <span class="input-group-text">₹</span>
+                    <input type="number" class="form-control" id="incomeAmountInput" min="0" step="0.01" required />
+                  </div>
+                </div>
+                <div class="col-12 d-flex gap-2">
+                  <button class="btn btn-success" type="submit">
+                    <i class="bi bi-plus-lg me-1"></i>Add Income
+                  </button>
+                  <button class="btn btn-outline-secondary" type="reset">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Income Categories & History with Tabs -->
+        <div class="col-12">
+          <div class="card glass shadow-lg">
+            <div class="card-body p-3 p-md-4">
+              <ul class="nav nav-pills gap-2 mb-3" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="income-tab-categories-tab" data-bs-toggle="tab" data-bs-target="#income-tab-categories" type="button" role="tab" aria-controls="income-tab-categories" aria-selected="true">
+                    <i class="bi bi-pie-chart me-1"></i>Categories
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="income-tab-history-tab" data-bs-toggle="tab" data-bs-target="#income-tab-history" type="button" role="tab" aria-controls="income-tab-history" aria-selected="false">
+                    <i class="bi bi-clock-history me-1"></i>All History
+                  </button>
+                </li>
+              </ul>
+
+              <div class="tab-content">
+                <!-- Income Categories breakdown (default) -->
+                <div class="tab-pane fade show active" id="income-tab-categories" role="tabpanel" aria-labelledby="income-tab-categories-tab">
+                  <div id="incomeCategoryBreakdown" class="category-grid"></div>
+                </div>
+
+                <!-- All Income History table -->
+                <div class="tab-pane fade" id="income-tab-history" role="tabpanel" aria-labelledby="income-tab-history-tab">
+                  <div class="d-flex flex-column flex-md-row gap-2 gap-md-3 align-items-md-center justify-content-between mb-2 mb-md-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <h2 class="h6 m-0"><i class="bi bi-clock-history me-2"></i>Income History</h2>
+                      <button id="incDateFilterBtn" class="btn btn-sm btn-outline-secondary" type="button" title="Date filters">
+                        <i class="bi bi-sliders"></i>
+                      </button>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                      <select id="incomeFilterCategory" class="form-select">
+                        <option value="ALL">All Sources</option>
+                        <option>Salary</option>
+                        <option>Freelance</option>
+                        <option>Business</option>
+                        <option>Investments</option>
+                        <option>Gift</option>
+                        <option>Other</option>
+                      </select>
+                      <select id="incomeSortBy" class="form-select">
+                        <option value="date_desc">Sort: Date (newest)</option>
+                        <option value="date_asc">Sort: Date (oldest)</option>
+                        <option value="amount_desc">Sort: Amount (high → low)</option>
+                        <option value="amount_asc">Sort: Amount (low → high)</option>
+                        <option value="category_asc">Sort: Source (A → Z)</option>
+                        <option value="category_desc">Sort: Source (Z → A)</option>
+                      </select>
+                      <button id="resetAllIncomeBtn" class="btn btn-outline-danger">
+                        <i class="bi bi-trash3 me-1"></i>Clear Income
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Date filter panel (hidden until toggled) -->
+                  <div id="incDateFilterPanel" class="row g-2 align-items-end mb-3 d-none">
+                    <div class="col-12 col-md-3">
+                      <label for="incDateFilterSelect" class="form-label">Date range</label>
+                      <select id="incDateFilterSelect" class="form-select form-select-sm">
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                        <option value="custom">Custom</option>
+                      </select>
+                    </div>
+                    <div class="col-6 col-md-2 inc-custom d-none">
+                      <label for="incDateFrom" class="form-label">From</label>
+                      <input type="date" id="incDateFrom" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-6 col-md-2 inc-custom d-none">
+                      <label for="incDateTo" class="form-label">To</label>
+                      <input type="date" id="incDateTo" class="form-control form-control-sm" />
+                    </div>
+                  </div>
+
+                  <div class="table-responsive">
+                    <table class="table align-middle table-hover mb-0">
+                      <thead>
+                        <tr>
+                          <th scope="col">Date</th>
+                          <th scope="col">Source</th>
+                          <th scope="col">Description</th>
+                          <th scope="col" class="text-end">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody id="incomeHistoryBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom toggle bar -->
+    <div class="bottom-toggle">
+      <div class="container d-flex gap-2">
+        <a href="index.html" class="btn btn-outline-dark flex-fill"><i class="bi bi-cash-coin me-1"></i>Expenses</a>
+        <a href="income.html" class="btn btn-dark flex-fill active"><i class="bi bi-coin me-1"></i>Income</a>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="./assets/script.js"></script>
+  </body>
+  </html>
+
+
