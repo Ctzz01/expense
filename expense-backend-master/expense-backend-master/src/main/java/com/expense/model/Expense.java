@@ -37,7 +37,6 @@ public class Expense {
     @NotNull(message = "Timestamp is required")
     private LocalDateTime timestamp;
 
-    @NotNull(message = "userId is required")
     private Long userId;
     
     

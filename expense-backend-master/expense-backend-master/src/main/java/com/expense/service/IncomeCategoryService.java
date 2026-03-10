@@ -12,6 +12,8 @@ public interface IncomeCategoryService {
 
     IncomeCategory getCategoryByName(String categoryName, Long userId);
 
+    IncomeCategory updateCategory(Long id, IncomeCategory updatedCategory, Long userId);
+
     void deleteCategory(Long categoryId, Long userId);
 }
 

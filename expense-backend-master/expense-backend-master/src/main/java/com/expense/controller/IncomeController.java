@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.expense.dto.IncomeKafkaMessage;
@@ -35,8 +36,8 @@ public class IncomeController {
     private IncomeProducer incomeProducer;
 
 
-    @PostMapping("/addIncome/{userId}")
-    public ResponseEntity<Income> addIncome(@PathVariable Long userId, @RequestBody @Valid Income income) {
+    @PostMapping("/addIncome")
+    public ResponseEntity<Income> addIncome(@RequestHeader("X-User-Id") Long userId, @RequestBody @Valid Income income) {
         log.info("Start: addIncome for userId={}, amount={}", userId, income.getAmount());
         Income savedIncome = incomeService.addIncome(userId, income);
        // incomeKafkaMessage.setSource(savedIncome.getSource());
@@ -59,15 +60,14 @@ public class IncomeController {
     
     
     
-    @GetMapping("/getIncomes/{userId}")
+    @GetMapping("/getIncomes")
     public ResponseEntity<List<Income>> getIncomes(
-            @PathVariable Long userId,
+            @RequestHeader("X-User-Id") Long userId,
             @RequestParam(required = false) String filter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.time.LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.time.LocalDate endDate) {
         log.info("Start: getIncomes for userId={}, filter={}, startDate={}, endDate={}", userId, filter, startDate, endDate);
-       // List<Income> incomes = incomeService.getIncomes(userId, filter, startDate, endDate);
-        List<Income> incomes = incomeService.getTotalIncome(userId);
+        List<Income> incomes = incomeService.getIncomes(userId, filter, startDate, endDate);
         log.info("End: retrieved {} incomes for userId={}", incomes.size(), userId);
         return ResponseEntity.ok(incomes);
     }

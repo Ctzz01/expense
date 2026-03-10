@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class CategoryController {
 
     // GET all categories
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories(@RequestParam Long userId) {
+    public ResponseEntity<List<Category>> getAllCategories(@RequestHeader("X-User-Id") Long userId) {
         log.info("Start: getAllCategories for userId={}", userId);
         List<Category> categories = categoryService.getAllCategoriesForUser(userId);
         log.info("End: getAllCategories for userId={}, totalCategories={}", userId, categories.size());
@@ -29,7 +30,7 @@ public class CategoryController {
 
     // POST create a category
     @PostMapping
-    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category, @RequestParam Long userId) {
+    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category, @RequestHeader("X-User-Id") Long userId) {
         log.info("Start: createCategory for userId={}, categoryName={}", userId, category.getName());
         Category created = categoryService.createCategory(category, userId);
         log.info("End: createCategory for userId={}, createdCategoryId={}", userId, created.getId());
@@ -38,7 +39,7 @@ public class CategoryController {
 
     // PUT update a category
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @Valid @RequestBody Category category, @RequestParam Long userId) {
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @Valid @RequestBody Category category, @RequestHeader("X-User-Id") Long userId) {
         log.info("Start: updateCategory id={}, userId={}, newCategoryName={}", id, userId, category.getName());
         Category updated = categoryService.updateCategory(id, category, userId);
         log.info("End: updateCategory id={}, userId={}", id, userId);
@@ -47,7 +48,7 @@ public class CategoryController {
 
     // DELETE a category
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id, @RequestParam Long userId) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id, @RequestHeader("X-User-Id") Long userId) {
         log.info("Start: deleteCategory id={}, userId={}", id, userId);
         categoryService.deleteCategory(id, userId);
         log.info("End: deleteCategory id={}, userId={}", id, userId);

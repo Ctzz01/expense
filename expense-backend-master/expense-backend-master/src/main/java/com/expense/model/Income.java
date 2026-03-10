@@ -40,7 +40,6 @@ public class Income {
     @NotNull(message = "Date is required")
     private LocalDateTime date;
 
-    @NotNull(message = "userId is required")
     private Long userId;
     
     

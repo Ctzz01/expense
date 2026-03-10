@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,8 +40,8 @@ public class ExpenseController {
     @Autowired
 	private CategoryRepository categoryRepository;
 	
-	@PostMapping("/addExpense/{userId}")
-	public ResponseEntity<String> addExpense(@PathVariable Long userId, @RequestBody @Valid Expense expense) {
+	@PostMapping("/addExpense")
+	public ResponseEntity<String> addExpense(@RequestHeader("X-User-Id") Long userId, @RequestBody @Valid Expense expense) {
 	    log.info("Start: addExpense for userId={}, category={}", userId, expense.getCategory().getName());
 
 	    try {
@@ -91,8 +92,8 @@ public class ExpenseController {
     }
 
 
-	@GetMapping("/getBalance/{userId}")
-	public ResponseEntity<?> getBalance(@PathVariable Long userId) {
+	@GetMapping("/getBalance")
+	public ResponseEntity<?> getBalance(@RequestHeader("X-User-Id") Long userId) {
 		log.info("Start: getBalance for userId={}", userId);
 
 		double balance = expenseService.getAccountBalance(userId);
@@ -101,11 +102,15 @@ public class ExpenseController {
 		return ResponseEntity.ok(balance);
 	}
 
-	@GetMapping("/getExpenseHistory/{userId}")
-	public ResponseEntity<?> getExpenseHistory(@PathVariable Long userId) {
-		log.info("Start: getExpenseHistory for userId={}", userId);
+	@GetMapping("/getExpenseHistory")
+	public ResponseEntity<?> getExpenseHistory(
+			@RequestHeader("X-User-Id") Long userId,
+			@RequestParam(required = false) String filter,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+		log.info("Start: getExpenseHistory for userId={}, filter={}, startDate={}, endDate={}", userId, filter, startDate, endDate);
 
-		List<Expense> history = expenseService.getExpenseHistory(userId);
+		List<Expense> history = expenseService.getExpenseHistory(userId, filter, startDate, endDate);
 		log.info("Retrieved {} expenses for userId={}", history.size(), userId);
 		log.info("End: getExpenseHistory for userId={}", userId);
 		return ResponseEntity.ok(history);
@@ -130,9 +135,9 @@ public class ExpenseController {
 	 */
 	
 	
-	@GetMapping("/getCategoryWiseSummary/{userId}")
+	@GetMapping("/getCategoryWiseSummary")
 	public ResponseEntity<?> getCategoryWiseSummary(
-	        @PathVariable Long userId,
+	        @RequestHeader("X-User-Id") Long userId,
 	        @RequestParam(required = false) String filter,
 	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 	        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {

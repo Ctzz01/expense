@@ -120,6 +120,43 @@ public class ExpenseServiceImpl implements ExpenseService {
         return expenseRepository.findByUserId(userId);
     }
 
+    @Override
+    public List<Expense> getExpenseHistory(Long userId, String filter, LocalDate startDate, LocalDate endDate) {
+        log.info("Fetching expense history for userId={}, filter={}, startDate={}, endDate={}", userId, filter, startDate, endDate);
+        
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+        
+        if (startDate != null && endDate != null) {
+            startDateTime = startDate.atStartOfDay();
+            endDateTime = endDate.atTime(LocalTime.MAX);
+        } else if (filter != null) {
+            LocalDate today = LocalDate.now();
+            switch (filter.toLowerCase()) {
+                case "week":
+                    startDateTime = today.with(DayOfWeek.MONDAY).atStartOfDay();
+                    endDateTime = today.with(DayOfWeek.SUNDAY).atTime(LocalTime.MAX);
+                    break;
+                case "month":
+                    startDateTime = today.withDayOfMonth(1).atStartOfDay();
+                    endDateTime = today.withDayOfMonth(today.lengthOfMonth()).atTime(LocalTime.MAX);
+                    break;
+                case "year":
+                    startDateTime = today.withDayOfYear(1).atStartOfDay();
+                    endDateTime = today.withDayOfYear(today.lengthOfYear()).atTime(LocalTime.MAX);
+                    break;
+                default:
+                    // If filter is invalid, return all history
+                    return expenseRepository.findByUserId(userId);
+            }
+        } else {
+            // No filter provided, return all history
+            return expenseRepository.findByUserId(userId);
+        }
+        
+        return expenseRepository.findByUserIdAndTimestampBetween(userId, startDateTime, endDateTime);
+    }
+
 	/*
 	 * @Override public Double getAccountBalance(Long userId) {
 	 * log.info("Calculating balance for userId: {}", userId); User user =

@@ -1,0 +1,46 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8081
+          predicates:
+            - Path=/auth/**
+
+        - id: expense-service-expense
+          uri: http://expense-service:8080
+          predicates:
+            - Path=/expense/**
+
+        - id: expense-service-income
+          uri: http://expense-service:8080
+          predicates:
+            - Path=/income/**
+
+        - id: expense-service-api
+          uri: http://expense-service:8080
+          predicates:
+            - Path=/api/**
+
+        - id: report-service
+          uri: http://report-service:8083
+          predicates:
+            - Path=/report/**
+
+        - id: ai-financial-analysis-service
+          uri: http://ai-financial-analysis-service:8082
+          predicates:
+            - Path=/analysis/**
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+
+logging:
+  level:
+    com.gateway: INFO
+    org.springframework.cloud.gateway: WARN

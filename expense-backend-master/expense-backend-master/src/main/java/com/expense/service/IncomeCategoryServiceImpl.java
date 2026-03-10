@@ -68,6 +68,40 @@ public class IncomeCategoryServiceImpl implements IncomeCategoryService {
     }
 
     @Override
+    public IncomeCategory updateCategory(Long id, IncomeCategory updatedCategory, Long userId) {
+        IncomeCategory existing = incomeCategoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        if (existing.getUserId() == null || !existing.getUserId().equals(userId)) {
+            throw new RuntimeException("Cannot update system-defined or other user's category");
+        }
+
+        String normalizedName = updatedCategory.getName().trim().toLowerCase();
+        
+        // Check if the new name already exists for this user (excluding current category)
+        boolean existsForUser = incomeCategoryRepository.existsByNameIgnoreCaseAndUserIdAndIdNot(normalizedName, userId, id);
+        boolean existsGlobally = incomeCategoryRepository.existsByNameIgnoreCaseAndUserIdIsNull(normalizedName);
+
+        if (existsForUser || existsGlobally) {
+            throw new IllegalArgumentException("Category already exists");
+        }
+
+        existing.setName(normalizedName);
+        IncomeCategory savedCategory = incomeCategoryRepository.save(existing);
+        
+        // Publish Kafka message for UPDATE
+        // IncomeCategoryKafkaMessage message = new IncomeCategoryKafkaMessage(
+        //         savedCategory.getId(),
+        //         savedCategory.getName(),
+        //         savedCategory.getUserId(),
+        //         IncomeCategoryKafkaMessage.ActionType.UPDATE
+        // );
+        // 
+        // incomeCategoryProducer.sendMessage(savedCategory.getUserId(), message);
+        return savedCategory;
+    }
+
+    @Override
     public void deleteCategory(Long categoryId, Long userId) {
         IncomeCategory category = incomeCategoryRepository.findById(categoryId)
             .orElseThrow(() -> new RuntimeException("Category not found"));

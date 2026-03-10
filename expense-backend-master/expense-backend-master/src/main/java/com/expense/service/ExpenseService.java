@@ -3,6 +3,7 @@ package com.expense.service;
 import com.expense.model.CategoryExpenseDTO;
 import com.expense.model.Expense;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,6 +16,8 @@ public interface ExpenseService {
     void deleteExpense(Long expenseId);
 
     List<Expense> getExpenseHistory(Long userId);
+
+    List<Expense> getExpenseHistory(Long userId, String filter, LocalDate startDate, LocalDate endDate);
 
     Double getAccountBalance(Long userId);
 
